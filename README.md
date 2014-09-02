@@ -1,4 +1,4 @@
 SpringRefresh
 =============
 
-spring refredhing
+spring refreshing
