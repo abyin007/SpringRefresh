@@ -1,6 +1,7 @@
 package com.apress.springrecipes.court.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -49,6 +50,21 @@ public class ReservationServiceImpl implements ReservationService {
 			}
 		}
 		reservations.add(reservation);
+	}
+
+	public List<SportType> getAllSportTypes() {
+		return Arrays.asList(new SportType[] { TENNIS, SOCCER });
+	}
+
+	public SportType getSportType(int sportTypeId) {
+		switch (sportTypeId) {
+		case 1:
+			return TENNIS;
+		case 2:
+			return SOCCER;
+		default:
+			return null;
+		}
 	}
 
 }

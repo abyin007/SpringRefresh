@@ -19,6 +19,9 @@
 			<td><a href="reservationForm">Reservation Form</a></td>
 		</tr>
 		<tr>
+			<td><a href="reservationForm?username=Roger">Reservation Form - Player</a></td>
+		</tr>
+		<tr>
 			<td><a href="reservationQuery">Reservation Query</a></td>
 		</tr>
 		<tr>

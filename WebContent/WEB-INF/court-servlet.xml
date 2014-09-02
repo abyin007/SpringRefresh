@@ -77,6 +77,20 @@
 		</property>
 	</bean>
 
+	<!-- Once you complete the ReservationBindingInitializer class, you have 
+		to register it with the application. To do this, you declare the binding 
+		initializer class as an AnnotationMethodHandlerAdapter property. By using 
+		this last declaration, every annotation-based controller (i.e., classes using 
+		the @Controller annotation) can have access to the same property editors 
+		in their handler methods. -->
+<!-- 	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean
+				class="com.apress.springrecipes.court.web.ReservationBindingInitializer" />
+		</property>
+	</bean> -->
+
 	<!-- Spring is able to resolve text messages for you by using a message 
 		source, which has to implement the MessageSource interface. Then your JSP 
 		files can use the <spring:message> tag, defined in Spring’s tag library, 
@@ -113,7 +127,7 @@
 			/> -->
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
-		<property name="order" value="3" />
+		<property name="order" value="2" />
 	</bean>
 
 	<!-- 2. Resolving Views from an XML Configuration File -->
@@ -144,7 +158,9 @@
 	<!-- In a Spring MVC application, you can register one or more exception 
 		resolver beans in the web application context to resolve uncaught exceptions. 
 		These beans have to implement the HandlerExceptionResolver interface for 
-		DispatcherServlet to auto-detect them -->
+		DispatcherServlet to auto-detect them. You can add any number of exception 
+		classes using the <prop> element, all the way down to the more general exception 
+		class java.lang.Exception. -->
 	<bean
 		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
