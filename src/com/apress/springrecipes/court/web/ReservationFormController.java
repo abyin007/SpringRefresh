@@ -15,6 +15,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.apress.springrecipes.court.domain.Player;
 import com.apress.springrecipes.court.domain.Reservation;
+import com.apress.springrecipes.court.domain.ReservationValidator;
 import com.apress.springrecipes.court.domain.SportType;
 import com.apress.springrecipes.court.service.ReservationService;
 
@@ -36,10 +37,12 @@ import com.apress.springrecipes.court.service.ReservationService;
 @SessionAttributes("reservation")
 public class ReservationFormController {
 	private ReservationService reservationService;
+	private ReservationValidator reservationValidator;
 
 	@Autowired
-	public ReservationFormController(ReservationService reservationService) {
+	public ReservationFormController(ReservationService reservationService, ReservationValidator reservationValidator) {
 		this.reservationService = reservationService;
+		this.reservationValidator = reservationValidator;
 	}
 
 	@RequestMapping(value = "/reservationForm", method = RequestMethod.GET)
@@ -62,8 +65,12 @@ public class ReservationFormController {
 	public String submitForm(
 			@RequestParam(required = false, value = "username") String username,
 			@ModelAttribute("reservation") Reservation reservation,
-			BindingResult result, SessionStatus status) {
+			BindingResult result, SessionStatus status, Model model) {
+		
+		reservationValidator.validate(reservation, result);
+		
 		if (result.hasErrors()) {
+			model.addAttribute("reservation", reservation);
 			if (null != username) {
 				return "reservationFormPlayer";
 			} else {
