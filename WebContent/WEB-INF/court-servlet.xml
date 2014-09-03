@@ -83,13 +83,13 @@
 		this last declaration, every annotation-based controller (i.e., classes using 
 		the @Controller annotation) can have access to the same property editors 
 		in their handler methods. -->
-<!-- 	<bean
+ 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="webBindingInitializer">
 			<bean
 				class="com.apress.springrecipes.court.web.ReservationBindingInitializer" />
 		</property>
-	</bean> -->
+	</bean>
 
 	<!-- Spring is able to resolve text messages for you by using a message 
 		source, which has to implement the MessageSource interface. Then your JSP 

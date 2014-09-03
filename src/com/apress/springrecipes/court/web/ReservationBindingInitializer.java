@@ -20,19 +20,20 @@ public class ReservationBindingInitializer implements WebBindingInitializer {
 	public ReservationBindingInitializer(){
 		
 	}
-			
+	
 	@Autowired
 	public ReservationBindingInitializer(ReservationService reservationService) {
 		this.reservationService = reservationService;
 	}
-
+	
 	public void initBinder(WebDataBinder binder, WebRequest request) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 		dateFormat.setLenient(false);
-		binder.registerCustomEditor(Date.class, new CustomDateEditor(
-				dateFormat, true));
+		/*binder.registerCustomEditor(Date.class, new CustomDateEditor(
+				dateFormat, true));*/
 		binder.registerCustomEditor(SportType.class, new SportTypeEditor(
 				reservationService));
+		System.out.println("Editors registered");
 	}
 
 }
