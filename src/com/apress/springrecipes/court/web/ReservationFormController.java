@@ -78,6 +78,7 @@ public class ReservationFormController {
 			}
 		}
 		reservationService.make(reservation);
+		status.setComplete();
 		return "redirect:reservationSuccess";
 	}
 
