@@ -1,0 +1,178 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+   http://www.springframework.org/schema/beans     
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+   http://www.springframework.org/schema/context 
+   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:component-scan base-package="com.apress.springrecipes.court.web" />
+	<context:component-scan base-package="com.apress.springrecipes.court.domain" />
+
+	<bean id="welcomeInterceptor" class="com.apress.springrecipes.court.web.WelcomeInterceptor" />
+
+	<bean id="reservationInterceptor"
+		class="com.apress.springrecipes.court.web.ReservationInterceptor" />
+
+	<!-- 1. Resolving Locales by an HTTP Request Header The default locale resolver 
+		used by Spring is AcceptHeaderLocaleResolver. It resolves locales by inspecting 
+		the accept-language header of an HTTP request. Note that this locale resolver 
+		cannot change a user’s locale because it is unable to modify the locale setting 
+		of the user’s operating system 2. Resolving Locales by a Session Attribute 
+		It resolves locales by inspecting a predefined attribute in a user’s session. 
+		Note that this locale resolver is able to change a user’s locale by altering 
+		the session attribute that stores the locale. 3. Resolving Locales by a Cookie 
+		This locale resolver is able to change a user’s locale by altering the cookie 
+		that stores the locale. <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"> 
+		<property name="cookieName" value="language" /> <property name="cookieMaxAge" 
+		value="3600" /> <property name="defaultLocale" value="en" /> </bean> -->
+
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<property name="defaultLocale" value="en" />
+	</bean>
+
+	<!-- LocaleChangeInterceptor can only detect the parameter for the handler 
+		mappings that enable it. So, if you have more than one handler mapping configured 
+		in your web application context, you have to register this interceptor to 
+		allow users to change their locales in any of the URLs -->
+	<bean id="localeChangeInterceptor"
+		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+		<property name="paramName" value="language" />
+	</bean>
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<property name="order" value="1" />
+		<property name="interceptors">
+			<list>
+				<ref bean="welcomeInterceptor" />
+				<ref bean="localeChangeInterceptor" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- Using the DefaultAnnotationHandlerMapping bean in this form has one 
+		particular drawback, the interceptors is assigned to every class defined 
+		with a @Controller annotation. If you have a few pair of controllers, you 
+		may want to discriminate on which controllers interceptors are applied. To 
+		do so, you need to define a custom handler interceptor. Fortunately, the 
+		situation is so common that a project is already available to support this 
+		scenario. Scott Murphy’s spring-plugins project allows you to apply interceptors 
+		on a controller basis by using URLs. You can download the project at http://code.google.com/p/springplugins/downloads/list. 
+		Once you download the project and place its JAR in the application’s /WEB-INF/lib 
+		directory. -->
+
+	<bean class="org.springplugins.web.SelectedAnnotationHandlerMapping">
+		<property name="order" value="0" />
+		<property name="urls">
+			<list>
+				<value>/reservationQuery</value>
+			</list>
+		</property>
+		<property name="interceptors">
+			<list>
+				<ref bean="reservationInterceptor" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- Once you complete the ReservationBindingInitializer class, you have 
+		to register it with the application. To do this, you declare the binding 
+		initializer class as an AnnotationMethodHandlerAdapter property. By using 
+		this last declaration, every annotation-based controller (i.e., classes using 
+		the @Controller annotation) can have access to the same property editors 
+		in their handler methods. -->
+ 	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean
+				class="com.apress.springrecipes.court.web.ReservationBindingInitializer" />
+		</property>
+	</bean>
+
+	<!-- Spring is able to resolve text messages for you by using a message 
+		source, which has to implement the MessageSource interface. Then your JSP 
+		files can use the <spring:message> tag, defined in Spring’s tag library, 
+		to resolve a message given the code. You can define a message source by registering 
+		a bean of type MessageSource in the web application context. You must set 
+		the bean name of the message source to messageSource for DispatcherServlet 
+		to auto-detect. Note that you can register only one message source per DispatcherServlet. 
+		The ResourceBundleMessageSource implementation resolves messages from different 
+		resource bundles for different locales. -->
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages" />
+	</bean>
+
+	<!-- Without the @Autowired annotation, the service bean can be injected 
+		explicitly inside the court-servlet.xml configuration using a statement like 
+		the following: <bean class="com.apress.springrecipes.court.web.ReservationQueryController"> 
+		<property name="reservationService" ref="reservationService" /> </bean> -->
+
+	<!-- The type of the resolved views can be specified by the viewClass property. 
+		By default, InternalResourceViewResolver resolves view names into view objects 
+		of type JstlView if the JSTL library (i.e., jstl.jar) is present in the classpath. 
+		So, you can omit the viewClass property if your views are JSP templates with 
+		JSTL tags. InternalResourceViewResolver is simple, but it can only resolve 
+		internal resource views that can be forwarded by the Servlet API’s RequestDispatcher 
+		(e.g., an internal JSP file or a servlet). As for other view types supported 
+		by Spring MVC, you have to resolve them using other strategies -->
+
+	<!-- 1. Resolving Views Based on a template’s name and location -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" 
+			/> -->
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+		<property name="order" value="2" />
+	</bean>
+
+	<!-- 2. Resolving Views from an XML Configuration File -->
+	<bean class="org.springframework.web.servlet.view.XmlViewResolver">
+		<property name="location">
+			<value>/WEB-INF/court-views.xml</value>
+		</property>
+		<property name="order" value="1" />
+	</bean>
+
+	<!-- 3. Resolving Views from a Resource Bundle -->
+	<bean class="org.springframework.web.servlet.view.ResourceBundleViewResolver">
+		<property name="basename" value="views" />
+		<property name="order" value="0" />
+	</bean>
+
+	<!-- 4. Resolving Views with Multiple Resolvers -->
+	<!-- If you have a lot of views in your web application, it is often insufficient 
+		to choose only one viewresolving strategy. When choosing more than one strategy 
+		at the same time, it’s important to specify the resolving priority. You can 
+		set the order properties of the view resolver beans for this purpose. The 
+		lower order value represents the higher priority. Note that you should assign 
+		the lowest priority to InternalResourceViewResolver because it always resolves 
+		a view no matter whether it exists or not. So, other resolvers will have 
+		no chance to resolve a view if they have lower priorities. The view name 
+		redirect:welcome triggers a redirect to the relative URL welcome. -->
+
+	<!-- In a Spring MVC application, you can register one or more exception 
+		resolver beans in the web application context to resolve uncaught exceptions. 
+		These beans have to implement the HandlerExceptionResolver interface for 
+		DispatcherServlet to auto-detect them. You can add any number of exception 
+		classes using the <prop> element, all the way down to the more general exception 
+		class java.lang.Exception. -->
+	<bean
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop
+					key="com.apress.springrecipes.court.service.ReservationNotAvailableException">
+					reservationNotAvailable
+				</prop>
+			</props>
+		</property>
+		<property name="defaultErrorView" value="error" />
+	</bean>
+
+</beans>
