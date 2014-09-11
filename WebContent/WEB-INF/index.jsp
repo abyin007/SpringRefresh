@@ -25,6 +25,9 @@
 			<td><a href="reservationQuery">Reservation Query</a></td>
 		</tr>
 		<tr>
+			<td><a href="periodicReservationForm">Periodic Reservation Form</a></td>
+		</tr>
+		<tr>
 			<td><a href="testRedirect">Redirect to welcome page</a></td>
 		</tr>
 		<tr>

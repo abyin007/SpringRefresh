@@ -2,9 +2,11 @@ package com.apress.springrecipes.court.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.apress.springrecipes.court.domain.PeriodicReservation;
 import com.apress.springrecipes.court.domain.Player;
 import com.apress.springrecipes.court.domain.Reservation;
 import com.apress.springrecipes.court.domain.SportType;
@@ -64,6 +66,23 @@ public class ReservationServiceImpl implements ReservationService {
 			return SOCCER;
 		default:
 			return null;
+		}
+	}
+
+	public void makePeriodic(PeriodicReservation periodicReservation)
+			throws ReservationNotAvailableException {
+		Calendar fromCalendar = Calendar.getInstance();
+		fromCalendar.setTime(periodicReservation.getFromDate());
+		Calendar toCalendar = Calendar.getInstance();
+		toCalendar.setTime(periodicReservation.getToDate());
+		while (fromCalendar.before(toCalendar)) {
+			Reservation reservation = new Reservation();
+			reservation.setCourtName(periodicReservation.getCourtName());
+			reservation.setDate(fromCalendar.getTime());
+			reservation.setHour(periodicReservation.getHour());
+			reservation.setPlayer(periodicReservation.getPlayer());
+			make(reservation);
+			fromCalendar.add(Calendar.DATE, periodicReservation.getPeriod());
 		}
 	}
 
