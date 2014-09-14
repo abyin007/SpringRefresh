@@ -4,12 +4,21 @@ Validation completed but when redirected to the reg page if wrong hours
 is given the date will be prepopulated in this format:
 Mon Jan 14 00:00:00 IST 2008
 
-2. 
+2.
+Below commented code in ReservationBindingInitializer doesnt seems to be working
+/*binder.registerCustomEditor(Date.class, new CustomDateEditor(
+				dateFormat, true));*/
+				
+				
+
+Solved Issues:
+
+1. 
 Displaying below error in reservationTimeForm.jsp
 * Failed to convert property value of type java.lang.String to required type java.util.Date for property fromDate; nested exception is java.lang.IllegalStateException: Cannot convert value of type [java.lang.String] to required type [java.util.Date] for property fromDate: no matching editors or conversion strategy found
 * From date is required.
 
-3.
-Below commented code in ReservationBindingInitializer doesnt seems to be working
-/*binder.registerCustomEditor(Date.class, new CustomDateEditor(
-				dateFormat, true));*/
+Solution:
+Added 
+typeMismatch.toDate=Invalid date format
+typeMismatch.fromDate=Invalid date format
