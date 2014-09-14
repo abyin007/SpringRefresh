@@ -19,6 +19,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.util.WebUtils;
 
 import com.apress.springrecipes.court.domain.PeriodicReservation;
+import com.apress.springrecipes.court.domain.PeriodicReservationValidator;
 import com.apress.springrecipes.court.domain.Player;
 import com.apress.springrecipes.court.service.ReservationService;
 
@@ -28,10 +29,13 @@ import com.apress.springrecipes.court.service.ReservationService;
 public class PeriodicReservationController {
 
 	private ReservationService reservationService;
+	private PeriodicReservationValidator validator;
 
 	@Autowired
-	public PeriodicReservationController(ReservationService reservationService) {
+	public PeriodicReservationController(ReservationService reservationService,
+			PeriodicReservationValidator validator) {
 		this.reservationService = reservationService;
+		this.validator = validator;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -56,9 +60,17 @@ public class PeriodicReservationController {
 			// Return to current page view, since user clicked cancel
 			return (String) pageForms.get(currentPage);
 		} else if (request.getParameter("_finish") != null) {
-			// User is finished, make reservation
-			reservationService.makePeriodic(reservation);
-			return "redirect:reservationSuccess";
+
+			new PeriodicReservationValidator().validate(reservation, result);
+			if (!result.hasErrors()) {
+				reservationService.makePeriodic(reservation);
+				status.setComplete();
+				return "redirect:reservationSuccess";
+			} else {
+				// Errors
+				return (String) pageForms.get(currentPage);
+			}
+
 		} else {
 			// User clicked Next or Previous(_target)
 			// Extract target page
@@ -69,8 +81,29 @@ public class PeriodicReservationController {
 			if (targetPage < currentPage) {
 				return (String) pageForms.get(targetPage);
 			}
-			// User clicked 'Next', return target page
-			return (String) pageForms.get(targetPage);
+			// User clicked next
+			// Validate data based on page
+			switch (currentPage) {
+			case 0:
+				new PeriodicReservationValidator().validateCourt(reservation,
+						result);
+				break;
+			case 1:
+				new PeriodicReservationValidator().validateTime(reservation,
+						result);
+				break;
+			case 2:
+				new PeriodicReservationValidator().validatePlayer(reservation,
+						result);
+				break;
+			}
+			if (!result.hasErrors()) {
+				// No errors, return target page
+				return (String) pageForms.get(targetPage);
+			} else {
+				// Errors, return current page
+				return (String) pageForms.get(currentPage);
+			}
 		}
 	}
 
