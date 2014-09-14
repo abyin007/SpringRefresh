@@ -16,11 +16,13 @@
 				<td>From Date</td>
 				<td><form:input path="fromDate" /></td>
 				<td><form:errors path="fromDate" cssClass="error" /></td>
+				<td>Give in MM/dd/yyyy format</td>
 			</tr>
 			<tr>
 				<td>To Date</td>
 				<td><form:input path="toDate" /></td>
 				<td><form:errors path="toDate" cssClass="error" /></td>
+				<td>Give in MM/dd/yyyy format</td>
 			</tr>
 			<tr>
 				<td>Period</td>
