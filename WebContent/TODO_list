@@ -22,5 +22,3 @@ Solution:
 Added 
 typeMismatch.toDate=Invalid date format
 typeMismatch.fromDate=Invalid date format
-
-test
